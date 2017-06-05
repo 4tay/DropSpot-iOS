@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.social-networking</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglesmaps</string>
+		<string>googlechromes</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>New Location thing???</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Show your location on a map.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>

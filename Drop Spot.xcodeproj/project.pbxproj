@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF4CFBBC1EE4870F00606CB6 /* DefaultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4CFBBA1EE4870F00606CB6 /* DefaultTableViewCell.swift */; };
+		BF4CFBBD1EE4870F00606CB6 /* DefaultTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF4CFBBB1EE4870F00606CB6 /* DefaultTableViewCell.xib */; };
 		BF68303E1EE23ABA00C590A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF68303D1EE23ABA00C590A0 /* AppDelegate.swift */; };
 		BF6830401EE23ABA00C590A0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF68303F1EE23ABA00C590A0 /* ViewController.swift */; };
 		BF6830431EE23ABA00C590A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF6830411EE23ABA00C590A0 /* Main.storyboard */; };
@@ -14,6 +16,8 @@
 		BF6830481EE23ABA00C590A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF6830461EE23ABA00C590A0 /* LaunchScreen.storyboard */; };
 		BF6830531EE23ABB00C590A0 /* Drop_SpotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6830521EE23ABB00C590A0 /* Drop_SpotTests.swift */; };
 		BF68305E1EE23ABB00C590A0 /* Drop_SpotUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF68305D1EE23ABB00C590A0 /* Drop_SpotUITests.swift */; };
+		BF68306C1EE23B2C00C590A0 /* BottomSheetViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF68306B1EE23B2C00C590A0 /* BottomSheetViewController.xib */; };
+		BF68306E1EE23B3A00C590A0 /* BottomSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF68306D1EE23B3A00C590A0 /* BottomSheetViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +38,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7411C5E15B93CFFCBDB40ABB /* Pods-Drop Spot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Drop Spot.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Drop Spot/Pods-Drop Spot.debug.xcconfig"; sourceTree = "<group>"; };
+		BEFB88B58B172867B5A963B7 /* Pods-Drop Spot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Drop Spot.release.xcconfig"; path = "Pods/Target Support Files/Pods-Drop Spot/Pods-Drop Spot.release.xcconfig"; sourceTree = "<group>"; };
+		BF4CFBBA1EE4870F00606CB6 /* DefaultTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultTableViewCell.swift; sourceTree = "<group>"; };
+		BF4CFBBB1EE4870F00606CB6 /* DefaultTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DefaultTableViewCell.xib; sourceTree = "<group>"; };
 		BF68303A1EE23ABA00C590A0 /* Drop Spot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Drop Spot.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF68303D1EE23ABA00C590A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BF68303F1EE23ABA00C590A0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -47,6 +55,8 @@
 		BF6830591EE23ABB00C590A0 /* Drop SpotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Drop SpotUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF68305D1EE23ABB00C590A0 /* Drop_SpotUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drop_SpotUITests.swift; sourceTree = "<group>"; };
 		BF68305F1EE23ABB00C590A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BF68306B1EE23B2C00C590A0 /* BottomSheetViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BottomSheetViewController.xib; sourceTree = "<group>"; };
+		BF68306D1EE23B3A00C590A0 /* BottomSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomSheetViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +84,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7D52FC1172B3D96CC75A31A9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B9E7336592426D6039DB9B0F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7411C5E15B93CFFCBDB40ABB /* Pods-Drop Spot.debug.xcconfig */,
+				BEFB88B58B172867B5A963B7 /* Pods-Drop Spot.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		BF6830311EE23ABA00C590A0 = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +107,8 @@
 				BF6830511EE23ABB00C590A0 /* Drop SpotTests */,
 				BF68305C1EE23ABB00C590A0 /* Drop SpotUITests */,
 				BF68303B1EE23ABA00C590A0 /* Products */,
+				B9E7336592426D6039DB9B0F /* Pods */,
+				7D52FC1172B3D96CC75A31A9 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,6 +127,10 @@
 			children = (
 				BF68303D1EE23ABA00C590A0 /* AppDelegate.swift */,
 				BF68303F1EE23ABA00C590A0 /* ViewController.swift */,
+				BF68306D1EE23B3A00C590A0 /* BottomSheetViewController.swift */,
+				BF68306B1EE23B2C00C590A0 /* BottomSheetViewController.xib */,
+				BF4CFBBA1EE4870F00606CB6 /* DefaultTableViewCell.swift */,
+				BF4CFBBB1EE4870F00606CB6 /* DefaultTableViewCell.xib */,
 				BF6830411EE23ABA00C590A0 /* Main.storyboard */,
 				BF6830441EE23ABA00C590A0 /* Assets.xcassets */,
 				BF6830461EE23ABA00C590A0 /* LaunchScreen.storyboard */,
@@ -132,9 +164,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF6830621EE23ABB00C590A0 /* Build configuration list for PBXNativeTarget "Drop Spot" */;
 			buildPhases = (
+				CFAD82B5A45ED347034C83D9 /* [CP] Check Pods Manifest.lock */,
 				BF6830361EE23ABA00C590A0 /* Sources */,
 				BF6830371EE23ABA00C590A0 /* Frameworks */,
 				BF6830381EE23ABA00C590A0 /* Resources */,
+				65C2E0ED6BC22DC20FAC0F91 /* [CP] Embed Pods Frameworks */,
+				CB772ADAD5CD728F729D1B28 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -238,6 +273,8 @@
 				BF6830481EE23ABA00C590A0 /* LaunchScreen.storyboard in Resources */,
 				BF6830451EE23ABA00C590A0 /* Assets.xcassets in Resources */,
 				BF6830431EE23ABA00C590A0 /* Main.storyboard in Resources */,
+				BF4CFBBD1EE4870F00606CB6 /* DefaultTableViewCell.xib in Resources */,
+				BF68306C1EE23B2C00C590A0 /* BottomSheetViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,12 +294,62 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		65C2E0ED6BC22DC20FAC0F91 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Drop Spot/Pods-Drop Spot-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB772ADAD5CD728F729D1B28 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Drop Spot/Pods-Drop Spot-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CFAD82B5A45ED347034C83D9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BF6830361EE23ABA00C590A0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				BF6830401EE23ABA00C590A0 /* ViewController.swift in Sources */,
+				BF4CFBBC1EE4870F00606CB6 /* DefaultTableViewCell.swift in Sources */,
+				BF68306E1EE23B3A00C590A0 /* BottomSheetViewController.swift in Sources */,
 				BF68303E1EE23ABA00C590A0 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -413,6 +500,7 @@
 		};
 		BF6830631EE23ABB00C590A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7411C5E15B93CFFCBDB40ABB /* Pods-Drop Spot.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = RG3ACPP788;
@@ -426,6 +514,7 @@
 		};
 		BF6830641EE23ABB00C590A0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BEFB88B58B172867B5A963B7 /* Pods-Drop Spot.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = RG3ACPP788;
@@ -514,6 +603,7 @@
 				BF6830641EE23ABB00C590A0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BF6830651EE23ABB00C590A0 /* Build configuration list for PBXNativeTarget "Drop SpotTests" */ = {
 			isa = XCConfigurationList;
@@ -522,6 +612,7 @@
 				BF6830671EE23ABB00C590A0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BF6830681EE23ABB00C590A0 /* Build configuration list for PBXNativeTarget "Drop SpotUITests" */ = {
 			isa = XCConfigurationList;
@@ -530,6 +621,7 @@
 				BF68306A1EE23ABB00C590A0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

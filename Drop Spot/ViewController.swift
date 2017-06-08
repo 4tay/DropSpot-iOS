@@ -24,6 +24,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     let bottomSheetVC = /*scrollable! ?*/ BottomSheetViewController() /*: ScrollableBottomSheetViewController()*/
     let baseURL = "http://dev.4tay.xyz:8080/yuri/api/location"
     
+    var mycustomView: UIView!
     
     var locationArray: Array<Any> = []
     
@@ -81,12 +82,19 @@ class ViewController: UIViewController, GMSMapViewDelegate {
             }.resume()
         
     }
+    @IBAction func addHash(_ sender: Any) {
+        loadCustomViewIntoController()
+        
+        print("pushed new button!")
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         addBottomSheetView()
+        //mycustomView.isHidden = true
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         
         // Initialize the location manager.
@@ -203,6 +211,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     func updateMapWithLocations(array: [[String: Any]]) {
         DispatchQueue.main.async {
             self.mapView.addSubview(self.makeSendLocation(text: "👍"))
+            self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
             for local in array {
                 if let lat = local["lat"] as? Float{
                     let lng = local["lng"] as? Float ?? 12.00
@@ -269,6 +278,15 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         
     }
     
+    func makeHashButton(text:String) -> UIButton {
+        let locationButton = UIButton(type: UIButtonType.system)
+        locationButton.frame = CGRect(x: view.frame.size.width-(locationButton.frame.size.width+65), y: view.frame.size.height-(locationButton.frame.size.height+340), width: 55, height: 55)
+        locationButton.setBackgroundImage(#imageLiteral(resourceName: "ic_launcher"), for: .normal)
+        locationButton.addTarget(self, action: #selector(addHash), for: .touchUpInside)
+        return locationButton
+        
+    }
+    
     func getDistance(remoteDistance: CLLocation) -> String {
         var newNumber = ""
         if let currentLocal = self.locationManager.location {
@@ -320,6 +338,48 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         bottomSheetVC.view.frame = CGRect(x: 0, y: self.view.frame.maxY, width: width, height: height)
         
         self.view.bringSubview(toFront: bottomSheetVC.view)
+    }
+    
+    func loadCustomViewIntoController() {
+        mycustomView = UIView(frame: CGRect(x: 10, y: 200, width: view.frame.size.width - 20, height: view.frame.size.height - 400))
+        
+        mycustomView.backgroundColor = UIColor.black
+        
+        self.view.addSubview(mycustomView)
+        self.view.bringSubview(toFront: mycustomView)
+        
+        mycustomView.isHidden = false
+        
+        // any other objects should be tied to this view as superView
+        // for example adding this okayButton
+        
+        let okayButton = UIButton(frame: CGRect(x: 0, y: mycustomView.frame.height - 50, width: mycustomView.frame.width / 2, height: 50))
+        okayButton.backgroundColor = UIColor.white
+        
+        // here we are adding the button its superView
+        mycustomView.addSubview(okayButton)
+        
+        okayButton.addTarget(self, action: #selector(self.okButtonImplementation), for:.touchUpInside)
+        okayButton.setTitle("ok", for: .normal)
+        okayButton.setTitleColor(UIColor.blue, for: .normal)
+        
+        
+        let cancelButton = UIButton(frame: CGRect(x: mycustomView.frame.width / 2, y: mycustomView.frame.height - 50, width: mycustomView.frame.width / 2, height: 50))
+        cancelButton.backgroundColor = UIColor.white
+        
+        // here we are adding the button its superView
+        mycustomView.addSubview(cancelButton)
+        
+        cancelButton.addTarget(self, action: #selector(self.okButtonImplementation), for:.touchUpInside)
+        cancelButton.setTitle("cancel", for: .normal)
+        cancelButton.setTitleColor(UIColor.blue, for: .normal)
+        
+        
+        
+    }
+    func okButtonImplementation(sender:UIButton) {
+        print("pushed okay button!!!")
+        mycustomView.isHidden = true
     }
 }
 

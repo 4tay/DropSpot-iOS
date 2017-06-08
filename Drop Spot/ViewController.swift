@@ -341,7 +341,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     
     func loadCustomViewIntoController() {
-        mycustomView = UIView(frame: CGRect(x: 10, y: 200, width: view.frame.size.width - 20, height: view.frame.size.height - 400))
+        mycustomView = UIView(frame: CGRect(x: 10, y: (view.frame.size.height / 5) * 2, width: view.frame.size.width - 20, height: view.frame.size.height / 5))
         
         mycustomView.backgroundColor = UIColor.black
         
@@ -349,6 +349,14 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         self.view.bringSubview(toFront: mycustomView)
         
         mycustomView.isHidden = false
+        
+        //add text field
+        let hashInput = UITextField(frame: CGRect(x: 0, y: mycustomView.frame.height / 3, width: mycustomView.frame.width, height: mycustomView.frame.height / 3))
+        hashInput.placeholder = "place holding..."
+        hashInput.backgroundColor = UIColor.white
+        
+        mycustomView.addSubview(hashInput)
+        
         
         // any other objects should be tied to this view as superView
         // for example adding this okayButton
@@ -370,7 +378,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         // here we are adding the button its superView
         mycustomView.addSubview(cancelButton)
         
-        cancelButton.addTarget(self, action: #selector(self.okButtonImplementation), for:.touchUpInside)
+        cancelButton.addTarget(self, action: #selector(self.cancelButtonImplementation), for:.touchUpInside)
         cancelButton.setTitle("cancel", for: .normal)
         cancelButton.setTitleColor(UIColor.blue, for: .normal)
         
@@ -379,6 +387,10 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     func okButtonImplementation(sender:UIButton) {
         print("pushed okay button!!!")
+        mycustomView.isHidden = true
+    }
+    func cancelButtonImplementation(sender:UIButton) {
+        print("pushed cancel button!!!")
         mycustomView.isHidden = true
     }
 }

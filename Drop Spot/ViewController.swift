@@ -356,6 +356,8 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         hashInput.backgroundColor = UIColor.white
         
         mycustomView.addSubview(hashInput)
+        hashInput.becomeFirstResponder()
+        
         
         
         // any other objects should be tied to this view as superView
@@ -393,6 +395,9 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         print("pushed cancel button!!!")
         mycustomView.isHidden = true
     }
+}
+extension UITextField {
+    
 }
 
 // Delegates to handle events for the location manager.

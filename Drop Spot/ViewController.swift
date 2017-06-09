@@ -23,8 +23,10 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     var infoWindow = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
     let bottomSheetVC = /*scrollable! ?*/ BottomSheetViewController() /*: ScrollableBottomSheetViewController()*/
     let baseURL = "http://dev.4tay.xyz:8080/yuri/api/location"
+    var postingHash = ""
     
     var mycustomView: UIView!
+    var hashInput: UITextField!
     
     var locationArray: Array<Any> = []
     
@@ -54,7 +56,10 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     
     @IBAction func sendLocation(_ sender: Any) {
-        
+        postLocation()
+    }
+    func postLocation() {
+    
         //print(locationManager.location ?? defaultLocation)
         
         //print(locationManager.location?.coordinate ?? defaultLocation)
@@ -67,7 +72,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         //let checkinID:String = lat! + lng! + time
         
         
-        let post = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&id=12&checkinID=120&colorCode=3")
+        let post = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&id=12&checkinID=120&colorCode=3&hash="+postingHash)
         print(post)
         let postURL = URL(string: post)
         
@@ -343,7 +348,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     func loadCustomViewIntoController() {
         mycustomView = UIView(frame: CGRect(x: 10, y: (view.frame.size.height / 5) * 2, width: view.frame.size.width - 20, height: view.frame.size.height / 5))
         
-        mycustomView.backgroundColor = UIColor.black
+        mycustomView.backgroundColor = UIColor.white
         
         self.view.addSubview(mycustomView)
         self.view.bringSubview(toFront: mycustomView)
@@ -351,7 +356,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         mycustomView.isHidden = false
         
         //add text field
-        let hashInput = UITextField(frame: CGRect(x: 0, y: mycustomView.frame.height / 3, width: mycustomView.frame.width, height: mycustomView.frame.height / 3))
+        hashInput = UITextField(frame: CGRect(x: 0, y: mycustomView.frame.height / 3, width: mycustomView.frame.width, height: mycustomView.frame.height / 3))
         hashInput.placeholder = "place holding..."
         hashInput.backgroundColor = UIColor.white
         
@@ -389,11 +394,20 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     func okButtonImplementation(sender:UIButton) {
         print("pushed okay button!!!")
+        if hashInput.hasText {
+            postingHash = hashInput.text!
+            
+            postingHash = postingHash.replacingOccurrences(of: " ", with: "")
+            
+        }
+        postLocation()
         mycustomView.isHidden = true
+        mycustomView.endEditing(true)
     }
     func cancelButtonImplementation(sender:UIButton) {
         print("pushed cancel button!!!")
         mycustomView.isHidden = true
+        mycustomView.endEditing(true)
     }
 }
 extension UITextField {

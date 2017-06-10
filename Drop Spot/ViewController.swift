@@ -39,6 +39,15 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     // A default location to use when location permission is not granted.
     let defaultLocation = CLLocation(latitude: -33.869405, longitude: 151.199)
     
+    var oldDotID = 0
+    var dotColor = 0
+    struct yuriKeys {
+        static let oldDotID = "oldDotID"
+        static let dotColor = "dotColor"
+    }
+    let storage = UserDefaults.standard
+    //TODO: Set read and write of storage
+    
     // Update the map once the user has made their selection.
     @IBAction func unwindToMain(segue: UIStoryboardSegue) {
         // Clear the map.
@@ -56,21 +65,16 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     
     @IBAction func sendLocation(_ sender: Any) {
-        postLocation()
+        putLocation()
     }
     func postLocation() {
     
-        //print(locationManager.location ?? defaultLocation)
-        
-        //print(locationManager.location?.coordinate ?? defaultLocation)
+        //get location of the user.
         let lat = locationManager.location?.coordinate.latitude
         print(lat ?? "no lat")
         let lng = locationManager.location?.coordinate.longitude
         print(lng ?? "no lng")
-        //let time = locationManager.location?.timestamp
-        
-        //let checkinID:String = lat! + lng! + time
-        
+
         
         let post = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&id=12&checkinID=120&colorCode=3&hash="+postingHash)
         print(post)
@@ -79,13 +83,33 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         var request:URLRequest = URLRequest(url:postURL!)
         request.httpMethod = "POST"
         URLSession.shared.dataTask(with:request) { (data, response, error) in
-            if error != nil {
-                print("error:",error.debugDescription)
-            } else {
-                //print("response:",response.)
-            }
-            }.resume()
+                if error != nil {
+                    print("error:",error.debugDescription)
+                }
+        }.resume()
+    }
+    func putLocation() {
+        //get location of the user.
+        let lat = locationManager.location?.coordinate.latitude
+        print(lat ?? "no lat")
+        let lng = locationManager.location?.coordinate.longitude
+        print(lng ?? "no lng")
         
+        let potentialDotID = abs(Int((Double(lat!) + Double(lng!)).rounded()))
+        
+        
+        print("my potential dotID is \(potentialDotID)")
+        let put = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&oldDotID=12&potentialDotID=\(potentialDotID)&colorCode=3&hash="+postingHash)
+        print(put)
+        let putURL = URL(string: put)
+        
+//        var request:URLRequest = URLRequest(url:putURL!)
+//        request.httpMethod = "PUT"
+//        URLSession.shared.dataTask(with:request) { (data, response, error) in
+//            if error != nil {
+//                print("error:",error.debugDescription)
+//            }
+//            }.resume()
     }
     @IBAction func addHash(_ sender: Any) {
         loadCustomViewIntoController()
@@ -95,6 +119,8 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         addBottomSheetView()
+        self.mapView.addSubview(self.makeSendLocation(text: "👍"))
+        self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
         //mycustomView.isHidden = true
     }
     override func viewDidLoad() {
@@ -215,8 +241,10 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     
     func updateMapWithLocations(array: [[String: Any]]) {
         DispatchQueue.main.async {
-            self.mapView.addSubview(self.makeSendLocation(text: "👍"))
-            self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
+            //Moved where I initialize the buttons OUTSIDE of the call for the locations. However, this has to happen AFTER the map is loaded, as I'm placing them within the map view directly. ;)
+            
+            //self.mapView.addSubview(self.makeSendLocation(text: "👍"))
+            //self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
             for local in array {
                 if let lat = local["lat"] as? Float{
                     let lng = local["lng"] as? Float ?? 12.00
@@ -400,7 +428,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
             postingHash = postingHash.replacingOccurrences(of: " ", with: "")
             
         }
-        postLocation()
+        putLocation()
         mycustomView.isHidden = true
         mycustomView.endEditing(true)
     }

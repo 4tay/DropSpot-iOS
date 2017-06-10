@@ -48,6 +48,18 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     let storage = UserDefaults.standard
     //TODO: Set read and write of storage
     
+//    storage.set(oldDotID, forKey: yuriKeys.oldDotID)
+//    storage.set(dotColor, forKey: yuriKeys.dotColor)
+//    
+//    // Getting
+//
+//    if oldDotID = storage.int(forKey: yuriKeys.oldDotID) {
+//        print(oldDotID) // Some String Value
+//    }
+//    if dotColor = storage.int(forKey: yuriKeys.dotColor) {
+//        print(dotColor) // Another String Value
+//    }
+    
     // Update the map once the user has made their selection.
     @IBAction func unwindToMain(segue: UIStoryboardSegue) {
         // Clear the map.

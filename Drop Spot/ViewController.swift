@@ -346,7 +346,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     
     func loadCustomViewIntoController() {
-        mycustomView = UIView(frame: CGRect(x: 10, y: (view.frame.size.height / 5) * 2, width: view.frame.size.width - 20, height: view.frame.size.height / 5))
+        mycustomView = UIView(frame: CGRect(x: 10, y: (view.frame.size.height / 5), width: view.frame.size.width - 20, height: view.frame.size.height / 5))
         
         mycustomView.backgroundColor = UIColor.white
         
@@ -357,7 +357,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         
         //add text field
         hashInput = UITextField(frame: CGRect(x: 0, y: mycustomView.frame.height / 3, width: mycustomView.frame.width, height: mycustomView.frame.height / 3))
-        hashInput.placeholder = "place holding..."
+        hashInput.placeholder = "#"
         hashInput.backgroundColor = UIColor.white
         
         mycustomView.addSubview(hashInput)

@@ -20,7 +20,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     var placesClient: GMSPlacesClient!
     var zoomLevel: Float = 15.0
     var tappedMarker = GMSMarker()
-    var infoWindow = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
+    var infoWindow = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 20))
     let bottomSheetVC = /*scrollable! ?*/ BottomSheetViewController() /*: ScrollableBottomSheetViewController()*/
     let baseURL = "http://dev.4tay.xyz:8080/yuri/api/location"
     var postingHash = ""
@@ -48,8 +48,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     let storage = UserDefaults.standard
     //TODO: Set read and write of storage
     
-//    storage.set(oldDotID, forKey: yuriKeys.oldDotID)
-//    storage.set(dotColor, forKey: yuriKeys.dotColor)
+
 //    
 //    // Getting
 //
@@ -77,7 +76,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     
     @IBAction func sendLocation(_ sender: Any) {
-        putLocation()
+        postLocation()
     }
     func postLocation() {
     
@@ -97,7 +96,9 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         URLSession.shared.dataTask(with:request) { (data, response, error) in
                 if error != nil {
                     print("error:",error.debugDescription)
-                }
+                } else {
+                    
+            }
         }.resume()
     }
     func putLocation() {
@@ -133,6 +134,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         addBottomSheetView()
         self.mapView.addSubview(self.makeSendLocation(text: "👍"))
         self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
+        infoWindow.backgroundColor = UIColor.blue
         //mycustomView.isHidden = true
     }
     override func viewDidLoad() {
@@ -272,6 +274,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
                     marker.position = positions
                     
                     marker.isTappable = true
+                    marker.tracksInfoWindowChanges = true
                     marker.title = hashTag
                     
                     
@@ -365,11 +368,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
                                               longitude: markerPosition.coordinate.longitude,
                                               zoom: zoomLevel)
         mapView.camera = camera
-        return true
-    }
-    
-    func mapView(_ mapView: GMSMapView, markerInfoWindow marker: GMSMarker) -> UIView? {
-        return infoWindow
+        return false
     }
     
     
@@ -440,7 +439,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
             postingHash = postingHash.replacingOccurrences(of: " ", with: "")
             
         }
-        putLocation()
+        postLocation()
         mycustomView.isHidden = true
         mycustomView.endEditing(true)
     }

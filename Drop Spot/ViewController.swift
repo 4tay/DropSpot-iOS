@@ -76,6 +76,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     
     @IBAction func sendLocation(_ sender: Any) {
+        postingHash = ""
         postLocation()
     }
     func postLocation() {
@@ -99,6 +100,9 @@ class ViewController: UIViewController, GMSMapViewDelegate {
                 } else {
                     
             }
+            DispatchQueue.main.async {
+                self.movedMapGetLocals()
+            }
         }.resume()
     }
     func putLocation() {
@@ -116,13 +120,16 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         print(put)
         let putURL = URL(string: put)
         
-//        var request:URLRequest = URLRequest(url:putURL!)
-//        request.httpMethod = "PUT"
-//        URLSession.shared.dataTask(with:request) { (data, response, error) in
-//            if error != nil {
-//                print("error:",error.debugDescription)
-//            }
-//            }.resume()
+        var request:URLRequest = URLRequest(url:putURL!)
+        request.httpMethod = "PUT"
+        URLSession.shared.dataTask(with:request) { (data, response, error) in
+            if error != nil {
+                print("error:",error.debugDescription)
+            }
+            DispatchQueue.main.async {
+                self.movedMapGetLocals()
+            }
+            }.resume()
     }
     @IBAction func addHash(_ sender: Any) {
         loadCustomViewIntoController()
@@ -175,8 +182,12 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     }
     func mapView(_ mapViewIdle: GMSMapView, idleAt position: GMSCameraPosition) {
         
-        let latCenter = mapView.camera.target.latitude
-        let lngCenter = mapView.camera.target.longitude
+        movedMapGetLocals()
+    }
+    
+    func movedMapGetLocals() {
+        let latCenter = self.mapView.camera.target.latitude
+        let lngCenter = self.mapView.camera.target.longitude
         
         let visableRegion: GMSVisibleRegion = mapView.projection.visibleRegion()
         let bounds = GMSCoordinateBounds(coordinate: visableRegion.nearLeft, coordinate: visableRegion.farRight)
@@ -185,7 +196,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         
         
         
-        print(latNorthEast , lngNorthEast )
+        print("my lat \(latNorthEast), my lng \(lngNorthEast)")
         let lat = Float(latCenter) - Float(latNorthEast)
         let lng = Float(lngCenter) - Float(lngNorthEast)
         
@@ -195,19 +206,14 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         } else {
             range = abs(Float(lng))
         }
-        print("lng: \(Float(position.target.longitude)) lat: \(Float(position.target.latitude)) range: \(range)")
+        //print("lng: \(Float(position.target.longitude)) lat: \(Float(position.target.latitude)) range: \(range)")
         
-        movedMapGetLocals(lng: Float(lngCenter), lat: Float(latCenter), range: range)
-    }
-    
-    func movedMapGetLocals(lng: Float, lat: Float, range: Float) {
-        
-        let urlString = "\(baseURL)?range=\(range)&lng=\(lng)&lat=\(lat)"
+        let urlString = "\(baseURL)?range=\(range)&lng=\(lngCenter)&lat=\(latCenter)"
         
         print("here is my whole thing!", urlString)
         
         let url = URL(string: urlString)
-        mapView.clear()
+        //mapView.clear()
         URLSession.shared.dataTask(with:url!) { (data, response, error) in
             if error != nil {
                 print(error ?? "random other error....")
@@ -364,10 +370,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         
         bottomSheetVC.topLabel.text = title
         bottomSheetVC.distanceLabel.text = getDistance(remoteDistance: markerPosition)
-        let camera = GMSCameraPosition.camera(withLatitude: markerPosition.coordinate.latitude,
-                                              longitude: markerPosition.coordinate.longitude,
-                                              zoom: zoomLevel)
-        mapView.camera = camera
+        print("didTap was called")
         return false
     }
     
@@ -472,28 +475,28 @@ extension ViewController: CLLocationManagerDelegate {
             mapView.animate(to: camera)
         }
         
-        let latCenter = camera.target.latitude
-        let lngCenter = camera.target.longitude
-        
-        
-        let visableRegion: GMSVisibleRegion = mapView.projection.visibleRegion()
-        let bounds = GMSCoordinateBounds(coordinate: visableRegion.nearLeft, coordinate: visableRegion.farRight)
-        let latNorthEast = bounds.northEast.latitude
-        let lngNorthEast = bounds.northEast.longitude
-        
-        
-        
-        print(latNorthEast , lngNorthEast )
-        let lat = Float(latCenter) - Float(latNorthEast)
-        let lng = Float(lngCenter) - Float(lngNorthEast)
-        
-        var range: Float = 0
-        if(abs(lat) > abs(lng)) {
-            range = abs(Float(lat))
-        } else {
-            range = abs(Float(lng))
-        }
-        movedMapGetLocals(lng: Float(location.coordinate.longitude),lat: Float(location.coordinate.latitude),range: range)
+//        let latCenter = camera.target.latitude
+//        let lngCenter = camera.target.longitude
+//        
+//        
+//        let visableRegion: GMSVisibleRegion = mapView.projection.visibleRegion()
+//        let bounds = GMSCoordinateBounds(coordinate: visableRegion.nearLeft, coordinate: visableRegion.farRight)
+//        let latNorthEast = bounds.northEast.latitude
+//        let lngNorthEast = bounds.northEast.longitude
+//        
+//        
+//        
+//        print(latNorthEast , lngNorthEast )
+//        let lat = Float(latCenter) - Float(latNorthEast)
+//        let lng = Float(lngCenter) - Float(lngNorthEast)
+//        
+//        var range: Float = 0
+//        if(abs(lat) > abs(lng)) {
+//            range = abs(Float(lat))
+//        } else {
+//            range = abs(Float(lng))
+//        }
+        movedMapGetLocals()
         
         
     }

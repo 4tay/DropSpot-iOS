@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import GoogleMaps
 
-class BottomSheetViewController: UIViewController{
+class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     // holdView can be UIImageView instead
     @IBOutlet weak var holdView: UIView!
     @IBOutlet weak var left: UIButton!
@@ -18,6 +18,8 @@ class BottomSheetViewController: UIViewController{
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var locationList: UITableView!
+    @IBOutlet weak var searchField: UITextField!
+    @IBOutlet weak var cancelSearch: UIButton!
     
     let fullView: CGFloat = 100
     var partialView: CGFloat {
@@ -54,6 +56,7 @@ class BottomSheetViewController: UIViewController{
             let yComponent = self?.partialView
             self?.view.frame = CGRect(x: 0, y: yComponent!, width: frame!.width, height: frame!.height)
         })
+        searchField.delegate = self
     }
     
     override func didReceiveMemoryWarning() {
@@ -61,6 +64,10 @@ class BottomSheetViewController: UIViewController{
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func cancelButton(_ sender: Any) {
+        self.searchField.text = ""
+        self.searchField.resignFirstResponder()
+    }
     @IBAction func rightButton(_ sender: AnyObject) {
         print("right clicked")
         if(showLeft) {
@@ -104,19 +111,37 @@ class BottomSheetViewController: UIViewController{
         }
         
         if recognizer.state == .ended {
-            var duration =  velocity.y < 0 ? Double((y - fullView) / -velocity.y) : Double((partialView - y) / velocity.y )
-            
-            duration = duration > 1.3 ? 1 : duration
-            
-            UIView.animate(withDuration: duration, delay: 0.0, options: [.allowUserInteraction], animations: {
-                if  velocity.y >= 0 {
-                    self.view.frame = CGRect(x: 0, y: self.partialView, width: self.view.frame.width, height: self.view.frame.height)
-                } else {
-                    self.view.frame = CGRect(x: 0, y: self.fullView, width: self.view.frame.width, height: self.view.frame.height)
-                }
-                
-            }, completion: nil)
+            showBottomView(velocity: velocity, y: y)
+//            var duration =  velocity.y < 0 ? Double((y - fullView) / -velocity.y) : Double((partialView - y) / velocity.y )
+//            
+//            duration = duration > 1.3 ? 1 : duration
+//            
+//            UIView.animate(withDuration: duration, delay: 0.0, options: [.allowUserInteraction], animations: {
+//                if  velocity.y >= 0 {
+//                    self.view.frame = CGRect(x: 0, y: self.partialView, width: self.view.frame.width, height: self.view.frame.height)
+//                } else {
+//                    self.view.frame = CGRect(x: 0, y: self.fullView, width: self.view.frame.width, height: self.view.frame.height)
+//                }
+//                
+//            }, completion: nil)
         }
+    }
+    func showBottomView(velocity: CGPoint, y: CGFloat) {
+        print("using my new showBottomView method")
+        var duration =  velocity.y < 0 ? Double((y - fullView) / -velocity.y) : Double((partialView - y) / velocity.y )
+        
+        duration = duration > 1.3 ? 1 : duration
+        
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.allowUserInteraction], animations: {
+            if  velocity.y >= 0 {
+                self.view.frame = CGRect(x: 0, y: self.partialView, width: self.view.frame.width, height: self.view.frame.height)
+                
+                self.searchField.resignFirstResponder()
+            } else {
+                self.view.frame = CGRect(x: 0, y: self.fullView, width: self.view.frame.width, height: self.view.frame.height)
+            }
+            
+        }, completion: nil)
     }
     
     func roundViews() {
@@ -149,9 +174,20 @@ class BottomSheetViewController: UIViewController{
         print("locationArray", locationArray)
         locationList.reloadData()
     }
-    
-}
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        print("I'm clicking my search field.....")
+        UIView.animate(withDuration: 0.3, delay: 0.0, options: [.allowUserInteraction], animations: {
+            self.view.frame = CGRect(x: 0, y: self.fullView, width: self.view.frame.width, height: self.view.frame.height)
+        }, completion: nil)
+        return true
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        print("TextField should return method called")
+        textField.resignFirstResponder();
+        return true;
+    }
 
+}
 extension BottomSheetViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -192,5 +228,6 @@ extension BottomSheetViewController: UITableViewDelegate, UITableViewDataSource 
         }
         
     }
+    
     
 }

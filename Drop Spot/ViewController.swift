@@ -79,6 +79,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         print("my potential dotID is \(oldDotID)")
         let put = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&oldDotID=\(oldDotID)&colorCode=3&hash="+postingHash)
         print(put)
+        postingHash = ""
         let putURL = URL(string: put)
         
         var request:URLRequest = URLRequest(url:putURL!)
@@ -87,7 +88,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
             if error != nil {
                 print("error:",error.debugDescription)
             } else {
-                print("here is my response \(response)")
+                //print("here is my response \(response)")
                 //print("here is my data \(data?.description)")
                 let parasedData = String(data: data!, encoding: String.Encoding.utf8) as String!
                 if let unwrapped = parasedData {
@@ -108,7 +109,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         addBottomSheetView()
-        self.mapView.addSubview(self.makeSendLocation(text: "👍"))
+        //self.mapView.addSubview(self.makeSendLocation(text: "👍"))
         self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
         infoWindow.backgroundColor = UIColor.blue
         
@@ -320,7 +321,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     
     func makeHashButton(text:String) -> UIButton {
         let locationButton = UIButton(type: UIButtonType.system)
-        locationButton.frame = CGRect(x: view.frame.size.width-(locationButton.frame.size.width+65), y: view.frame.size.height-(locationButton.frame.size.height+340), width: 55, height: 55)
+        locationButton.frame = CGRect(x: view.frame.size.width-(locationButton.frame.size.width+65), y: view.frame.size.height-(locationButton.frame.size.height+270), width: 55, height: 55)
         locationButton.setBackgroundImage(#imageLiteral(resourceName: "ic_launcher"), for: .normal)
         locationButton.addTarget(self, action: #selector(addHash), for: .touchUpInside)
         return locationButton
@@ -385,7 +386,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         mycustomView.isHidden = false
         
         //add text field
-        hashInput = UITextField(frame: CGRect(x: 0, y: mycustomView.frame.height / 3, width: mycustomView.frame.width, height: mycustomView.frame.height / 3))
+        hashInput = UITextField(frame: CGRect(x: 0, y: mycustomView.frame.height / 4, width: mycustomView.frame.width, height: mycustomView.frame.height / 3))
         hashInput.placeholder = "#"
         hashInput.backgroundColor = UIColor.white
         

@@ -108,7 +108,7 @@
                                 <constraint firstAttribute="height" constant="40" id="Cya-8g-lNZ"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" title="Close">
+                            <state key="normal" title="Near by">
                                 <color key="titleColor" red="0.18772074580192566" green="0.51381963491439819" blue="0.9836958646774292" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="titleShadowColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                             </state>

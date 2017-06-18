@@ -11,7 +11,7 @@ import GoogleMaps
 import GooglePlaces
 import Foundation
 
-class ViewController: UIViewController, GMSMapViewDelegate {
+class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     
     
     var locationManager = CLLocationManager()
@@ -21,12 +21,15 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     var zoomLevel: Float = 15.0
     var tappedMarker = GMSMarker()
     var infoWindow = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 20))
-    let bottomSheetVC = /*scrollable! ?*/ BottomSheetViewController() /*: ScrollableBottomSheetViewController()*/
+    let bottomSheetVC = BottomSheetViewController()
     let baseURL = "http://dev.4tay.xyz:8080/yuri/api/location"
     var postingHash = ""
     
     var mycustomView: UIView!
     var hashInput: UITextField!
+    
+    var sentFromBottomSheet:String?
+    var searchHash = ""
     
     var locationArray: Array<Any> = []
     
@@ -39,25 +42,13 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     // A default location to use when location permission is not granted.
     let defaultLocation = CLLocation(latitude: -33.869405, longitude: 151.199)
     
-    var oldDotID = 0
-    var dotColor = 0
+    var oldDotID = ""
+    var dotColor = ""
     struct yuriKeys {
         static let oldDotID = "oldDotID"
         static let dotColor = "dotColor"
     }
     let storage = UserDefaults.standard
-    //TODO: Set read and write of storage
-    
-
-//    
-//    // Getting
-//
-//    if oldDotID = storage.int(forKey: yuriKeys.oldDotID) {
-//        print(oldDotID) // Some String Value
-//    }
-//    if dotColor = storage.int(forKey: yuriKeys.dotColor) {
-//        print(dotColor) // Another String Value
-//    }
     
     // Update the map once the user has made their selection.
     @IBAction func unwindToMain(segue: UIStoryboardSegue) {
@@ -77,33 +68,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     
     @IBAction func sendLocation(_ sender: Any) {
         postingHash = ""
-        postLocation()
-    }
-    func postLocation() {
-    
-        //get location of the user.
-        let lat = locationManager.location?.coordinate.latitude
-        print(lat ?? "no lat")
-        let lng = locationManager.location?.coordinate.longitude
-        print(lng ?? "no lng")
-
-        
-        let post = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&id=12&checkinID=120&colorCode=3&hash="+postingHash)
-        print(post)
-        let postURL = URL(string: post)
-        
-        var request:URLRequest = URLRequest(url:postURL!)
-        request.httpMethod = "POST"
-        URLSession.shared.dataTask(with:request) { (data, response, error) in
-                if error != nil {
-                    print("error:",error.debugDescription)
-                } else {
-                    
-            }
-            DispatchQueue.main.async {
-                self.movedMapGetLocals()
-            }
-        }.resume()
+        putLocation()
     }
     func putLocation() {
         //get location of the user.
@@ -111,12 +76,8 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         print(lat ?? "no lat")
         let lng = locationManager.location?.coordinate.longitude
         print(lng ?? "no lng")
-        
-        let potentialDotID = abs(Int((Double(lat!) + Double(lng!)).rounded()))
-        
-        
-        print("my potential dotID is \(potentialDotID)")
-        let put = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&oldDotID=12&potentialDotID=\(potentialDotID)&colorCode=3&hash="+postingHash)
+        print("my potential dotID is \(oldDotID)")
+        let put = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&oldDotID=\(oldDotID)&colorCode=3&hash="+postingHash)
         print(put)
         let putURL = URL(string: put)
         
@@ -125,6 +86,14 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         URLSession.shared.dataTask(with:request) { (data, response, error) in
             if error != nil {
                 print("error:",error.debugDescription)
+            } else {
+                print("here is my response \(response)")
+                //print("here is my data \(data?.description)")
+                let parasedData = String(data: data!, encoding: String.Encoding.utf8) as String!
+                if let unwrapped = parasedData {
+                    print("here is my actual data: \(unwrapped)")
+                    self.storage.set(unwrapped, forKey: yuriKeys.oldDotID)
+                }
             }
             DispatchQueue.main.async {
                 self.movedMapGetLocals()
@@ -142,7 +111,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         self.mapView.addSubview(self.makeSendLocation(text: "👍"))
         self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
         infoWindow.backgroundColor = UIColor.blue
-        //mycustomView.isHidden = true
+        
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -177,8 +146,27 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         mapView.isHidden = true
         
         mapView.delegate = self
+        // Getting my saved values
+        if let oldID = storage.string(forKey: yuriKeys.oldDotID) {
+            oldDotID = oldID
+            print("My ID is: \(oldDotID)")
+        }
+        if let color = storage.string(forKey: yuriKeys.dotColor) {
+            dotColor = color
+            print(dotColor)
+        }
         
         
+    }
+    func setHash(hash: String) {
+        self.sentFromBottomSheet = hash
+        if let valueToDisplay = sentFromBottomSheet {
+            print("Value from bottomSheet = \(valueToDisplay)")
+            searchHash = valueToDisplay
+            movedMapGetLocals()
+        } else {
+            print("no data from bottomSheet")
+        }
     }
     func mapView(_ mapViewIdle: GMSMapView, idleAt position: GMSCameraPosition) {
         
@@ -208,12 +196,14 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         }
         //print("lng: \(Float(position.target.longitude)) lat: \(Float(position.target.latitude)) range: \(range)")
         
-        let urlString = "\(baseURL)?range=\(range)&lng=\(lngCenter)&lat=\(latCenter)"
+        let urlString = "\(baseURL)?range=\(range)&lng=\(lngCenter)&lat=\(latCenter)&hash=\(searchHash)"
+        //reset the search hash
+        searchHash = ""
         
         print("here is my whole thing!", urlString)
         
         let url = URL(string: urlString)
-        //mapView.clear()
+        mapView.clear()
         URLSession.shared.dataTask(with:url!) { (data, response, error) in
             if error != nil {
                 print(error ?? "random other error....")
@@ -261,10 +251,6 @@ class ViewController: UIViewController, GMSMapViewDelegate {
     
     func updateMapWithLocations(array: [[String: Any]]) {
         DispatchQueue.main.async {
-            //Moved where I initialize the buttons OUTSIDE of the call for the locations. However, this has to happen AFTER the map is loaded, as I'm placing them within the map view directly. ;)
-            
-            //self.mapView.addSubview(self.makeSendLocation(text: "👍"))
-            //self.mapView.addSubview(self.makeHashButton(text: "taggggg"))
             for local in array {
                 if let lat = local["lat"] as? Float{
                     let lng = local["lng"] as? Float ?? 12.00
@@ -385,6 +371,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         bottomSheetVC.view.frame = CGRect(x: 0, y: self.view.frame.maxY, width: width, height: height)
         
         self.view.bringSubview(toFront: bottomSheetVC.view)
+        bottomSheetVC.delegate = self
     }
     
     func loadCustomViewIntoController() {
@@ -405,10 +392,6 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         mycustomView.addSubview(hashInput)
         hashInput.becomeFirstResponder()
         
-        
-        
-        // any other objects should be tied to this view as superView
-        // for example adding this okayButton
         
         let okayButton = UIButton(frame: CGRect(x: 0, y: mycustomView.frame.height - 50, width: mycustomView.frame.width / 2, height: 50))
         okayButton.backgroundColor = UIColor.white
@@ -442,7 +425,7 @@ class ViewController: UIViewController, GMSMapViewDelegate {
             postingHash = postingHash.replacingOccurrences(of: " ", with: "")
             
         }
-        postLocation()
+        putLocation()
         mycustomView.isHidden = true
         mycustomView.endEditing(true)
     }
@@ -451,9 +434,6 @@ class ViewController: UIViewController, GMSMapViewDelegate {
         mycustomView.isHidden = true
         mycustomView.endEditing(true)
     }
-}
-extension UITextField {
-    
 }
 
 // Delegates to handle events for the location manager.
@@ -474,28 +454,6 @@ extension ViewController: CLLocationManagerDelegate {
         } else {
             mapView.animate(to: camera)
         }
-        
-//        let latCenter = camera.target.latitude
-//        let lngCenter = camera.target.longitude
-//        
-//        
-//        let visableRegion: GMSVisibleRegion = mapView.projection.visibleRegion()
-//        let bounds = GMSCoordinateBounds(coordinate: visableRegion.nearLeft, coordinate: visableRegion.farRight)
-//        let latNorthEast = bounds.northEast.latitude
-//        let lngNorthEast = bounds.northEast.longitude
-//        
-//        
-//        
-//        print(latNorthEast , lngNorthEast )
-//        let lat = Float(latCenter) - Float(latNorthEast)
-//        let lng = Float(lngCenter) - Float(lngNorthEast)
-//        
-//        var range: Float = 0
-//        if(abs(lat) > abs(lng)) {
-//            range = abs(Float(lat))
-//        } else {
-//            range = abs(Float(lng))
-//        }
         movedMapGetLocals()
         
         

@@ -10,6 +10,10 @@ import Foundation
 import UIKit
 import GoogleMaps
 
+protocol InteractWithRoot {
+    func setHash(hash: String)
+}
+
 class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     // holdView can be UIImageView instead
     @IBOutlet weak var holdView: UIView!
@@ -30,6 +34,8 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     
     var locationArray = [[String: Any]]()
     
+    var delegate:InteractWithRoot?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(BottomSheetViewController.panGesture))
@@ -38,7 +44,6 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
         locationList.delegate = self
         locationList.dataSource = self
         locationList.register(UINib(nibName: "DefaultTableViewCell", bundle: nil), forCellReuseIdentifier: "default")
-        
         
         roundViews()
     }
@@ -112,18 +117,6 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
         
         if recognizer.state == .ended {
             showBottomView(velocity: velocity, y: y)
-//            var duration =  velocity.y < 0 ? Double((y - fullView) / -velocity.y) : Double((partialView - y) / velocity.y )
-//            
-//            duration = duration > 1.3 ? 1 : duration
-//            
-//            UIView.animate(withDuration: duration, delay: 0.0, options: [.allowUserInteraction], animations: {
-//                if  velocity.y >= 0 {
-//                    self.view.frame = CGRect(x: 0, y: self.partialView, width: self.view.frame.width, height: self.view.frame.height)
-//                } else {
-//                    self.view.frame = CGRect(x: 0, y: self.fullView, width: self.view.frame.width, height: self.view.frame.height)
-//                }
-//                
-//            }, completion: nil)
         }
     }
     func showBottomView(velocity: CGPoint, y: CGFloat) {
@@ -183,6 +176,9 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         print("TextField should return method called")
+        if let submitHash = textField.text {
+         delegate?.setHash(hash: submitHash)
+        }
         textField.resignFirstResponder();
         return true;
     }

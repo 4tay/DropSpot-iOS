@@ -71,6 +71,10 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         putLocation()
     }
     func putLocation() {
+        if let oldID = storage.string(forKey: yuriKeys.oldDotID) {
+            oldDotID = oldID
+            print("My ID is: \(oldDotID)")
+        }
         //get location of the user.
         let lat = locationManager.location?.coordinate.latitude
         print(lat ?? "no lat")

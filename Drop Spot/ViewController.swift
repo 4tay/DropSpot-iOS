@@ -226,8 +226,9 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                                 if let lng = location["lng"] as? Float {
                                     locationDict["lng"] = lng
                                     let distanceTo = self.getDistance(remoteDistance: CLLocation(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(lng)))
-                                    locationDict["distanceTo"] = distanceTo
+                                    locationDict["distanceTo"] = distanceTo.0
                                     print("distance to \(distanceTo)")
+                                    locationDict["measureDistance"] = distanceTo.1
                                 }
                             }
                             if let id = location["checkinID"] as? Int {
@@ -242,6 +243,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                             
                             locationArray.append(locationDict)
                         }
+                        locationArray = locationArray.sorted {($0["measureDistance"] as? Double)! < ($1["measureDistance"] as? Double)! }
                     }
                 } catch {
                     print("Error deserializing JSON: \(error)")
@@ -332,8 +334,9 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         
     }
     
-    func getDistance(remoteDistance: CLLocation) -> String {
+    func getDistance(remoteDistance: CLLocation) -> (String, Double){
         var newNumber = ""
+        var newDistance = 0.0
         if let currentLocal = self.locationManager.location {
             
             let distance = currentLocal.distance(from: remoteDistance)
@@ -349,9 +352,11 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                 let rounded = (((distance / 1609.34) * 10).rounded() / 10)
                 newNumber = String(rounded) + " miles"
             }
+            newDistance = distance
+            print("this is my distance! \(newDistance)")
         }
         
-        return newNumber
+        return (newNumber, newDistance)
     }
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
@@ -360,7 +365,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         let markerPosition = CLLocation(latitude: CLLocationDegrees(marker.position.latitude), longitude: CLLocationDegrees(marker.position.longitude))
         
         bottomSheetVC.topLabel.text = title
-        bottomSheetVC.distanceLabel.text = getDistance(remoteDistance: markerPosition)
+        bottomSheetVC.distanceLabel.text = getDistance(remoteDistance: markerPosition).0
         print("didTap was called")
         return false
     }

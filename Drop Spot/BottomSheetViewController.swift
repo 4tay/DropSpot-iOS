@@ -177,8 +177,16 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         print("TextField should return method called")
+        
         if let submitHash = textField.text {
-         crossClassDelegate?.setHash(hash: submitHash)
+            let searchHash = ViewController.encode(submitHash)
+//            searchHash = searchHash.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+//            searchHash = searchHash.replacingOccurrences(of: "&", with: "%26")
+//            searchHash = searchHash.replacingOccurrences(of: "'", with: "")
+//            
+//            searchHash = searchHash.replacingOccurrences(of: " ", with: "")
+
+         crossClassDelegate?.setHash(hash: searchHash)
         }
         textField.resignFirstResponder();
         return true;

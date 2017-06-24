@@ -452,12 +452,12 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     func okButtonImplementation(sender:UIButton) {
         print("pushed okay button!!!")
         if hashInput.hasText {
-            postingHash = encode(hashInput.text!)
-            postingHash = hashInput.text!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-            postingHash = postingHash.replacingOccurrences(of: "&", with: "%26")
-            postingHash = postingHash.replacingOccurrences(of: "'", with: "")
-            
-            postingHash = postingHash.replacingOccurrences(of: " ", with: "")
+            postingHash = ViewController.encode(hashInput.text!)
+//            postingHash = hashInput.text!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+//            postingHash = postingHash.replacingOccurrences(of: "&", with: "%26")
+//            postingHash = postingHash.replacingOccurrences(of: "'", with: "")
+//
+//            postingHash = postingHash.replacingOccurrences(of: " ", with: "")
             
         }
         putLocation()
@@ -469,7 +469,13 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         mycustomView.isHidden = true
         mycustomView.endEditing(true)
     }
-    func encode(_ s: String) -> String {
+    static func encode(_ str: String) -> String {
+        var s = str
+        s = s.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+        s = s.replacingOccurrences(of: "&", with: "%26")
+        s = s.replacingOccurrences(of: "'", with: "")
+        
+        s = s.replacingOccurrences(of: " ", with: "")
         let data = s.data(using: .nonLossyASCII, allowLossyConversion: true)!
         return String(data: data, encoding: .utf8)!
     }

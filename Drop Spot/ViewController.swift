@@ -31,6 +31,8 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     var sentFromBottomSheet:String?
     var searchHash = ""
     
+    var markerToShow = 0
+    
     var locationArray: Array<Any> = []
     
     // An array to hold the list of likely places.
@@ -173,6 +175,12 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
             print("no data from bottomSheet")
         }
     }
+    func showTitle(id: Int) {
+        print("here is the pass through from my bottomSheet \(id)")
+        markerToShow = id
+        movedMapGetLocals()
+        
+    }
     func mapView(_ mapViewIdle: GMSMapView, idleAt position: GMSCameraPosition) {
         
         movedMapGetLocals()
@@ -208,7 +216,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         print("here is my whole thing!", urlString)
         
         let url = URL(string: urlString)
-        mapView.clear()
+        //mapView.clear()
         URLSession.shared.dataTask(with:url!) { (data, response, error) in
             if error != nil {
                 print(error ?? "random other error....")
@@ -231,8 +239,11 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                                     locationDict["measureDistance"] = distanceTo.1
                                 }
                             }
-                            if let id = location["checkinID"] as? Int {
-                                locationDict["checkinID"] = id
+                            if let id = location["locationID"] as? Int {
+                                locationDict["locationID"] = id
+                                if(id == self.markerToShow) {
+                                    locationDict["showLocation"] = 1
+                                }
                             }
                             if let colorCode = location["colorCode"] as? Int {
                                 locationDict["colorCode"] = colorCode
@@ -258,25 +269,29 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     
     func updateMapWithLocations(array: [[String: Any]]) {
         DispatchQueue.main.async {
+            var showMarker = false
+            var lat: Float = 0.0
+            var lng: Float = 0.0
             for local in array {
-                if let lat = local["lat"] as? Float{
-                    let lng = local["lng"] as? Float ?? 12.00
-                    let id = local["checkinID"] as? Int ?? 101101
+                //if let lat = location["lat"] as? Float {
+                if let id = local["locationID"] as? Int {
+                    lat = local["lat"] as? Float ?? 12.00
+                    lng = local["lng"] as? Float ?? 12.00
+                    //let id = local["locationID"] as? Int ?? 101101
+                    if(id == self.markerToShow) {
+                        showMarker = true
+                    } else {
+                        showMarker = false
+                    }
                     let colorCode = local["colorCode"] as? Int ?? 101101
                     let hashTag = local["hash"] as? String ?? "noHash"
-                    print("checkinID:", id, "lat:", lat, "lng:", lng, "colorCode:", colorCode, "hash:", hashTag)
-                    
+                    print("locationID:", id, "lat:", lat, "lng:", lng, "colorCode:", colorCode, "hash:", hashTag)
                     let positions = CLLocationCoordinate2D(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(lng))
-                    
                     let marker = GMSMarker()
-                    
                     marker.position = positions
-                    
                     marker.isTappable = true
                     marker.tracksInfoWindowChanges = true
                     marker.title = hashTag
-                    
-                    
                     switch colorCode{
                     case 1:
                         print("colorCode was a", colorCode)
@@ -308,6 +323,13 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                     }
                     
                     marker.map = self.mapView
+                    if (showMarker) {
+                       let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(lng), zoom: self.zoomLevel)
+                        print("I would be showing a title???? \(id)")
+                        self.mapView.camera = camera
+                        self.mapView.selectedMarker = marker
+                        self.markerToShow = 0
+                    }
                     
                 }
             }
@@ -381,7 +403,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         bottomSheetVC.view.frame = CGRect(x: 0, y: self.view.frame.maxY, width: width, height: height)
         
         self.view.bringSubview(toFront: bottomSheetVC.view)
-        bottomSheetVC.delegate = self
+        bottomSheetVC.crossClassDelegate = self
     }
     
     func loadCustomViewIntoController() {

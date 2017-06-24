@@ -452,7 +452,10 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     func okButtonImplementation(sender:UIButton) {
         print("pushed okay button!!!")
         if hashInput.hasText {
-            postingHash = hashInput.text!
+            postingHash = encode(hashInput.text!)
+            postingHash = hashInput.text!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+            postingHash = postingHash.replacingOccurrences(of: "&", with: "%26")
+            postingHash = postingHash.replacingOccurrences(of: "'", with: "")
             
             postingHash = postingHash.replacingOccurrences(of: " ", with: "")
             
@@ -465,6 +468,10 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         print("pushed cancel button!!!")
         mycustomView.isHidden = true
         mycustomView.endEditing(true)
+    }
+    func encode(_ s: String) -> String {
+        let data = s.data(using: .nonLossyASCII, allowLossyConversion: true)!
+        return String(data: data, encoding: .utf8)!
     }
 }
 

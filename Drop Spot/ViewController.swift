@@ -471,11 +471,10 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     }
     static func encode(_ str: String) -> String {
         var s = str
-        s = s.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         s = s.replacingOccurrences(of: "&", with: "%26")
-        s = s.replacingOccurrences(of: "'", with: "")
-        
+        s = s.replacingOccurrences(of: "'", with: "''")
         s = s.replacingOccurrences(of: " ", with: "")
+        s = s.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         let data = s.data(using: .nonLossyASCII, allowLossyConversion: true)!
         return String(data: data, encoding: .utf8)!
     }

@@ -12,6 +12,7 @@ import GoogleMaps
 
 protocol InteractWithRoot {
     func setHash(hash: String)
+    func showTitle(id: Int)
 }
 
 class BottomSheetViewController: UIViewController, UITextFieldDelegate{
@@ -34,7 +35,7 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     
     var locationArray = [[String: Any]]()
     
-    var delegate:InteractWithRoot?
+    var crossClassDelegate:InteractWithRoot?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -176,8 +177,16 @@ class BottomSheetViewController: UIViewController, UITextFieldDelegate{
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         print("TextField should return method called")
+        
         if let submitHash = textField.text {
-         delegate?.setHash(hash: submitHash)
+            let searchHash = ViewController.encode(submitHash)
+//            searchHash = searchHash.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+//            searchHash = searchHash.replacingOccurrences(of: "&", with: "%26")
+//            searchHash = searchHash.replacingOccurrences(of: "'", with: "")
+//            
+//            searchHash = searchHash.replacingOccurrences(of: " ", with: "")
+
+         crossClassDelegate?.setHash(hash: searchHash)
         }
         textField.resignFirstResponder();
         return true;
@@ -214,11 +223,15 @@ extension BottomSheetViewController: UITableViewDelegate, UITableViewDataSource 
         let locationSelected = locationArray[indexPath.item]
         if let lat = locationSelected["lat"] as? Float{
             let lng = locationSelected["lng"] as? Float ?? 12.00
-            let id = locationSelected["checkinID"] as? Int ?? 101101
+            let id = locationSelected["locationID"] as? Int ?? 101101
             let colorCode = locationSelected["colorCode"] as? Int ?? 101101
             let hashTag = locationSelected["hash"] as? String ?? "noHash"
             let distanceTo = locationSelected["distanceTo"] as? String ?? "no distance"
-            print("checkinID:", id, "lat:", lat, "lng:", lng, "colorCode:", colorCode, "hash:", hashTag, "distanceTo \(distanceTo)")
+            print("locationID:", id, "lat:", lat, "lng:", lng, "colorCode:", colorCode, "hash:", hashTag, "distanceTo \(distanceTo)")
+            UIView.animate(withDuration: 0.1, delay: 0.0, options: [.allowUserInteraction], animations: {
+                self.view.frame = CGRect(x: 0, y: self.partialView, width: self.view.frame.width, height: self.view.frame.height)
+            }, completion: nil)
+            crossClassDelegate?.showTitle(id: id)
             self.topLabel.text = hashTag
             self.distanceLabel.text = distanceTo
         }

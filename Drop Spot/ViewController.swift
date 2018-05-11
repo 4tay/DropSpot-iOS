@@ -22,7 +22,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     var tappedMarker = GMSMarker()
     var infoWindow = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 20))
     let bottomSheetVC = BottomSheetViewController()
-    let baseURL = "http://dev.4tay.xyz:8080/yuri/api/location"
+    let baseURL = "https://eg75gef3gi.execute-api.us-east-1.amazonaws.com/alpha"
     var postingHash = ""
     
     var mycustomView: UIView!

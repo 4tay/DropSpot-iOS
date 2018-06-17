@@ -31,7 +31,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     var sentFromBottomSheet:String?
     var searchHash = ""
     
-    var markerToShow = 0
+    var markerToShow = ""
     
     var locationArray: Array<Any> = []
     
@@ -49,6 +49,14 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     struct yuriKeys {
         static let oldDotID = "oldDotID"
         static let dotColor = "dotColor"
+    }
+    struct PutBody {
+        let lat: String
+        let lng: String
+        let id: String
+        let hash: String
+        let colorCode: Int
+        
     }
     let storage = UserDefaults.standard
     
@@ -78,29 +86,45 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
             print("My ID is: \(oldDotID)")
         }
         //get location of the user.
-        let lat = locationManager.location?.coordinate.latitude
+        let lat = locationManager.location?.coordinate.latitude.description
         print(lat ?? "no lat")
-        let lng = locationManager.location?.coordinate.longitude
+        let lng = locationManager.location?.coordinate.longitude.description
         print(lng ?? "no lng")
         print("my potential dotID is \(oldDotID)")
-        let put = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&oldDotID=\(oldDotID)&colorCode=3&hash="+postingHash)
-        print(put)
-        postingHash = ""
-        let putURL = URL(string: put)
+        //let put = (baseURL + "?lng="+(lng?.description)!+"&lat="+(lat?.description)!+"&oldDotID=\(oldDotID)&colorCode=3&hash="+postingHash)
+        //print(put)
+        let putURL = URL(string: baseURL)
         
         var request:URLRequest = URLRequest(url:putURL!)
         request.httpMethod = "PUT"
+        //let body = PutBody(lat: (lat?.description)!, lng: (lng?.description)!, id: oldDotID, hash: postingHash, colorCode: 3)
+        
+        let body: [String: Any] = ["body": ["lat": lat!,
+                         "lng": lng!, "locationID": oldDotID, "hash": postingHash, "colorCode": 3]]
+        postingHash = " "
+        
+        let jsonData = try? JSONSerialization.data(withJSONObject: body)
+        request.httpBody = jsonData
+
         URLSession.shared.dataTask(with:request) { (data, response, error) in
             if error != nil {
                 print("error:",error.debugDescription)
             } else {
+                do {
+                    if let data = data,
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        self.storage.set(json["locationID"], forKey: yuriKeys.oldDotID)
+                    }
+                } catch {
+                    print("Error deserializing JSON: \(error)")
+                }
                 //print("here is my response \(response)")
                 //print("here is my data \(data?.description)")
-                let parasedData = String(data: data!, encoding: String.Encoding.utf8) as String!
-                if let unwrapped = parasedData {
-                    print("here is my actual data: \(unwrapped)")
-                    self.storage.set(unwrapped, forKey: yuriKeys.oldDotID)
-                }
+                //let parasedData = String(data: data!, encoding: String.Encoding.utf8) as String!
+                //if let unwrapped = parasedData {
+                //    print("here is my actual data: \(unwrapped)")
+                //    self.storage.set(unwrapped, forKey: yuriKeys.oldDotID)
+                //}
             }
             DispatchQueue.main.async {
                 self.movedMapGetLocals()
@@ -144,7 +168,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         mapView.settings.myLocationButton = true
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         mapView.isMyLocationEnabled = true
-        let mapInsets = UIEdgeInsets(top: 0, left: 0, bottom: 135, right: 0)
+        let mapInsets = UIEdgeInsets(top: 0, left: 0, bottom: 200, right: 0)
         mapView.padding = mapInsets
         mapView.setMinZoom(10, maxZoom: 20)
         
@@ -177,7 +201,6 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     }
     func showTitle(id: Int) {
         print("here is the pass through from my bottomSheet \(id)")
-        markerToShow = id
         movedMapGetLocals()
         
     }
@@ -209,15 +232,19 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         }
         //print("lng: \(Float(position.target.longitude)) lat: \(Float(position.target.latitude)) range: \(range)")
         
-        let urlString = "\(baseURL)?range=\(range)&lng=\(lngCenter)&lat=\(latCenter)&hash=\(searchHash)"
+        let urlString = "\(baseURL)?&lng=\(lngCenter)&lat=\(latCenter)"
         //reset the search hash
         searchHash = ""
         
-        print("here is my whole thing!", urlString)
+        print("here is my whole thing!", urlString, " and more")
         
-        let url = URL(string: urlString)
+        let getURL = URL(string: urlString)
         //mapView.clear()
-        URLSession.shared.dataTask(with:url!) { (data, response, error) in
+        
+        var request:URLRequest = URLRequest(url:getURL!)
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        URLSession.shared.dataTask(with:request) { (data, response, error) in
             if error != nil {
                 print(error ?? "random other error....")
             } else {
@@ -237,16 +264,23 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                                     locationDict["distanceTo"] = distanceTo.0
                                     print("distance to \(distanceTo)")
                                     locationDict["measureDistance"] = distanceTo.1
+                                    if("\(lat)_\(lng)") == self.markerToShow{
+                                        print("Marker to show... \(self.markerToShow)")
+                                    }
                                 }
                             }
                             if let id = location["locationID"] as? Int {
                                 locationDict["locationID"] = id
-                                if(id == self.markerToShow) {
-                                    locationDict["showLocation"] = 1
-                                }
+                            }
+                            else {
+                                print("no id...\(location["locationID"] as? String)")
                             }
                             if let colorCode = location["colorCode"] as? Int {
                                 locationDict["colorCode"] = colorCode
+                                print("My colorCode: \(colorCode)")
+                            }
+                            else {
+                                print("no colorCode \(location["colorCode"])")
                             }
                             if let hashTag = location["hash"] as? String {
                                 locationDict["hash"] = hashTag
@@ -269,16 +303,18 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     
     func updateMapWithLocations(array: [[String: Any]]) {
         DispatchQueue.main.async {
+            self.mapView.clear()
             var showMarker = false
             var lat: Float = 0.0
             var lng: Float = 0.0
             for local in array {
                 //if let lat = location["lat"] as? Float {
-                if let id = local["locationID"] as? Int {
+                print("My locations: \(local)")
+                if (local["locationID"] as? Int) != nil {
                     lat = local["lat"] as? Float ?? 12.00
                     lng = local["lng"] as? Float ?? 12.00
-                    //let id = local["locationID"] as? Int ?? 101101
-                    if(id == self.markerToShow) {
+                    let id = local["locationID"] as? Int ?? 101101
+                    if("\(lat)_\(lng)" == self.markerToShow) {
                         showMarker = true
                     } else {
                         showMarker = false
@@ -293,43 +329,44 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                     marker.tracksInfoWindowChanges = true
                     marker.title = hashTag
                     switch colorCode{
-                    case 1:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "bluedot")
-                    case 2:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "reddot")
-                    case 3:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "greendot")
-                    case 4:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "yellowdot")
-                    case 5:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "orangedot")
-                    case 6:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "pinkdot")
-                    case 7:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "purpledot")
-                    case 8:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "navydot")
-                    default:
-                        print("colorCode was a", colorCode)
-                        marker.icon = #imageLiteral(resourceName: "bluedot")
+                        case 1:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "bluedot")
+                        case 2:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "reddot")
+                        case 3:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "greendot")
+                        case 4:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "yellowdot")
+                        case 5:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "orangedot")
+                        case 6:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "pinkdot")
+                        case 7:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "purpledot")
+                        case 8:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "navydot")
+                        default:
+                            print("colorCode was a", colorCode)
+                            marker.icon = #imageLiteral(resourceName: "bluedot")
                     }
-                    
+                    print("I would be showing a title???? \(lat)_\(lng)")
                     marker.map = self.mapView
-                    if (showMarker) {
+                    if("\(lat)_\(lng)" == self.markerToShow) {
                        let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(lng), zoom: self.zoomLevel)
-                        print("I would be showing a title???? \(id)")
+                        print("I would be showing a title???? \(lat)_\(lng)")
                         self.mapView.camera = camera
                         self.mapView.selectedMarker = marker
-                        self.markerToShow = 0
+                        self.markerToShow = ""
                     }
+                    print("Marker to show: \(self.markerToShow)")
                     
                 }
             }
@@ -349,7 +386,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     
     func makeHashButton(text:String) -> UIButton {
         let locationButton = UIButton(type: UIButtonType.system)
-        locationButton.frame = CGRect(x: view.frame.size.width-(locationButton.frame.size.width+65), y: view.frame.size.height-(locationButton.frame.size.height+270), width: 55, height: 55)
+        locationButton.frame = CGRect(x: view.frame.size.width-(locationButton.frame.size.width+65), y: view.frame.size.height-(locationButton.frame.size.height+190), width: 55, height: 55)
         locationButton.setBackgroundImage(#imageLiteral(resourceName: "ic_launcher"), for: .normal)
         locationButton.addTarget(self, action: #selector(addHash), for: .touchUpInside)
         return locationButton
@@ -388,7 +425,8 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         
         bottomSheetVC.topLabel.text = title
         bottomSheetVC.distanceLabel.text = getDistance(remoteDistance: markerPosition).0
-        print("didTap was called")
+        self.markerToShow = "\(marker.position.latitude.description)_\(marker.position.longitude.description)"
+        print("didTap was called... lat: \(marker.position.latitude.description) lng: \(marker.position.longitude.description)")
         return false
     }
     

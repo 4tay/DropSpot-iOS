@@ -31,7 +31,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
     var sentFromBottomSheet:String?
     var searchHash = ""
     
-    var markerToShow = ""
+    var markerToShow = 000
     
     var locationArray: Array<Any> = []
     
@@ -264,7 +264,8 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                                     locationDict["distanceTo"] = distanceTo.0
                                     print("distance to \(distanceTo)")
                                     locationDict["measureDistance"] = distanceTo.1
-                                    if("\(lat)_\(lng)") == self.markerToShow{
+                                    let locationId = location["locationId"] as? Int ?? 10101
+                                    if locationId == self.markerToShow{
                                         print("Marker to show... \(self.markerToShow)")
                                     }
                                 }
@@ -314,7 +315,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                     lat = local["lat"] as? Float ?? 12.00
                     lng = local["lng"] as? Float ?? 12.00
                     let id = local["locationID"] as? Int ?? 101101
-                    if("\(lat)_\(lng)" == self.markerToShow) {
+                    if(id == self.markerToShow) {
                         showMarker = true
                     } else {
                         showMarker = false
@@ -328,6 +329,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                     marker.isTappable = true
                     marker.tracksInfoWindowChanges = true
                     marker.title = hashTag
+                    marker.userData = id
                     switch colorCode{
                         case 1:
                             print("colorCode was a", colorCode)
@@ -358,13 +360,15 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
                             marker.icon = #imageLiteral(resourceName: "bluedot")
                     }
                     print("I would be showing a title???? \(lat)_\(lng)")
+                    let markerId = marker.userData as? Int ?? 123123
+                    print("here is my id: \(markerId)")
                     marker.map = self.mapView
-                    if("\(lat)_\(lng)" == self.markerToShow) {
+                    if(markerId == self.markerToShow) {
                        let camera = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(lng), zoom: self.zoomLevel)
                         print("I would be showing a title???? \(lat)_\(lng)")
                         self.mapView.camera = camera
                         self.mapView.selectedMarker = marker
-                        self.markerToShow = ""
+                        self.markerToShow = 000
                     }
                     print("Marker to show: \(self.markerToShow)")
                     
@@ -425,7 +429,7 @@ class ViewController: UIViewController, GMSMapViewDelegate, InteractWithRoot {
         
         bottomSheetVC.topLabel.text = title
         bottomSheetVC.distanceLabel.text = getDistance(remoteDistance: markerPosition).0
-        self.markerToShow = "\(marker.position.latitude.description)_\(marker.position.longitude.description)"
+        self.markerToShow = marker.userData as? Int ?? 123123
         print("didTap was called... lat: \(marker.position.latitude.description) lng: \(marker.position.longitude.description)")
         return false
     }
